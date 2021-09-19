@@ -14,7 +14,8 @@
                 "-ID:/openglrepo/Include",
                 "-LD:/openglrepo/Libs",
                 "-lglfw3dll",
-                "-lopengl32"
+                "-lopengl32",
+                "-lFreeImage"
             ],
             "options": {
                 "cwd": "C:/msys64/mingw64/bin"
