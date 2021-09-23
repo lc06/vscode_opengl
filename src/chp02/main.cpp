@@ -144,6 +144,27 @@ int main() {
 
     cubeShader.use();
 
+    glm::mat4 rotateLight = glm::mat4(1.0f);
+    rotateLight =
+        glm::rotate(rotateLight, (float)glm::radians(20.0f * glfwGetTime()),
+                    glm::vec3(0.0f, 1.0f, 0.0f));
+    cubeShader.setVec3("light.position",
+                       glm::vec3(rotateLight * glm::vec4(lightPos, 0.0f)));
+    cubeShader.setVec3("viewPos", camera.Position);
+
+    // 设置光照环境光，漫反射，高光『颜色分量』
+    cubeShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
+    cubeShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    cubeShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+    // 设置物体材质属性
+    cubeShader.setVec3("material.ambient", 0.0f, 0.1f, 0.06f);
+    cubeShader.setVec3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+    cubeShader.setVec3("material.specular", 0.50196078f, 0.50196078f,
+                       0.50196078f);
+    cubeShader.setFloat("material.shininess", 32.0f);
+
+    // 设置投影/视图变换矩阵
     glm::mat4 projection = glm::perspective(
         glm::radians(camera.Zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
         0.1f, 100.0f);
@@ -151,18 +172,9 @@ int main() {
     cubeShader.setMat4("projection", projection);
     cubeShader.setMat4("view", view);
 
+    // 设置世界变换矩阵
     glm::mat4 model = glm::mat4(1.0f);
     cubeShader.setMat4("model", model);
-
-    cubeShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-    cubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-    glm::mat4 rotateLight = glm::mat4(1.0f);
-    rotateLight =
-        glm::rotate(rotateLight, (float)glm::radians(20.0f * glfwGetTime()),
-                    glm::vec3(0.0f, 1.0f, 0.0f));
-    cubeShader.setVec3("lightPos",
-                       glm::vec3(rotateLight * glm::vec4(lightPos, 0.0f)));
-    cubeShader.setVec3("viewPos", camera.Position);
 
     // 渲染盒子
     glBindVertexArray(cubeVAO);
