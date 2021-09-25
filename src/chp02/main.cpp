@@ -108,6 +108,13 @@ int main() {
       1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
       -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  1.0f};
 
+  glm::vec3 cubePositions[] = {
+      glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
+      glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
+      glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
+      glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
+      glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
+
   Shader cubeShader(
       "D:/{Code}/Code "
       "Repository/vscode_c++/openglcmake/resources/chp02/cube.vs",
@@ -170,22 +177,32 @@ int main() {
 
     cubeShader.use();
 
-    glm::mat4 rotateLight = glm::mat4(1.0f);
-    rotateLight =
-        glm::rotate(rotateLight, (float)glm::radians(20.0f * glfwGetTime()),
-                    glm::vec3(0.0f, 1.0f, 0.0f));
-    cubeShader.setVec3("light.position",
-                       glm::vec3(rotateLight * glm::vec4(lightPos, 0.0f)));
-    cubeShader.setVec3("viewPos", camera.Position);
+    // 让光源在空间中随时间不断旋转
+    // glm::mat4 rotateLight = glm::mat4(1.0f);
+    // rotateLight =
+    //     glm::rotate(rotateLight, (float)glm::radians(20.0f * glfwGetTime()),
+    //                 glm::vec3(0.0f, 1.0f, 0.0f));
+    // cubeShader.setVec3("light.position",
+    //                    glm::vec3(rotateLight * glm::vec4(lightPos, 0.0f)));
+
+    cubeShader.setVec3("light.position", camera.Position);
+    cubeShader.setVec3("light.direction", camera.Front);
+    cubeShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+    cubeShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
 
     // 设置光照环境光，漫反射，高光『颜色分量』
-    cubeShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-    cubeShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+    cubeShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
+    cubeShader.setVec3("light.diffuse", 0.8f, 0.8f, 0.8f);
     cubeShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
+    cubeShader.setFloat("light.constant", 1.0f);
+    cubeShader.setFloat("light.linear", 0.09f);
+    cubeShader.setFloat("light.quadratic", 0.032f);
+
+    cubeShader.setVec3("viewPos", camera.Position);
     // 设置物体材质属性
     cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-    cubeShader.setFloat("material.shininess", 64.0f);
+    cubeShader.setFloat("material.shininess", 32.0f);
 
     // 设置投影/视图变换矩阵
     glm::mat4 projection = glm::perspective(
@@ -194,10 +211,6 @@ int main() {
     glm::mat4 view = camera.GetViewMatrix();
     cubeShader.setMat4("projection", projection);
     cubeShader.setMat4("view", view);
-
-    // 设置世界变换矩阵
-    glm::mat4 model = glm::mat4(1.0f);
-    cubeShader.setMat4("model", model);
 
     // 绑定纹理
     glActiveTexture(GL_TEXTURE0);
@@ -212,7 +225,18 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, emissionMap);
     cubeShader.setInt("material.emission", 2);
 
+    // 设置世界变换矩阵
     // 渲染盒子
+    glm::mat4 model = glm::mat4(1.0f);
+    for (unsigned int i = 0; i < 10; i++) {
+      model = glm::translate(model, cubePositions[i]);
+      float angle = 20.0f * i;
+      model =
+          glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+      cubeShader.setMat4("model", model);
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
