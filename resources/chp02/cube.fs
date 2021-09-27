@@ -15,6 +15,7 @@ struct Material {
     sampler2D emission;
     float shininess;  // 物体高光反射度
 }; 
+uniform Material material;
 
 struct Light {
     vec3 position;  // 聚光灯位置
@@ -31,8 +32,6 @@ struct Light {
     float linear;
     float quadratic;
 };
-
-uniform Material material;
 uniform Light light;
 uniform vec3 viewPos;
 
@@ -79,6 +78,6 @@ void main()
     * attenuation: 光源强度随距离衰减
     * 计算公式: \begin{equation} F_{att} = \frac{1.0}{K_c + K_l * d + K_q * d^2} \end{equation}
     */
-    vec3 result = attenuation * (ambient + intensity * (diffuse + specular));
+    vec3 result = emission + attenuation * (ambient + intensity * (diffuse + specular));
     FragColor = vec4(result, 1.0);
 }

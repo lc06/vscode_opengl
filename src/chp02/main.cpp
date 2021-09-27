@@ -177,13 +177,16 @@ int main() {
 
     cubeShader.use();
 
-    // 让光源在空间中随时间不断旋转
+    // // 让光源在空间中随时间不断旋转
     // glm::mat4 rotateLight = glm::mat4(1.0f);
     // rotateLight =
     //     glm::rotate(rotateLight, (float)glm::radians(20.0f * glfwGetTime()),
     //                 glm::vec3(0.0f, 1.0f, 0.0f));
     // cubeShader.setVec3("light.position",
     //                    glm::vec3(rotateLight * glm::vec4(lightPos, 0.0f)));
+
+    // 设置物体材质属性
+    cubeShader.setFloat("material.shininess", 32.0f);
 
     cubeShader.setVec3("light.position", camera.Position);
     cubeShader.setVec3("light.direction", camera.Front);
@@ -200,9 +203,6 @@ int main() {
     cubeShader.setFloat("light.quadratic", 0.032f);
 
     cubeShader.setVec3("viewPos", camera.Position);
-    // 设置物体材质属性
-    cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-    cubeShader.setFloat("material.shininess", 32.0f);
 
     // 设置投影/视图变换矩阵
     glm::mat4 projection = glm::perspective(
@@ -228,6 +228,7 @@ int main() {
     // 设置世界变换矩阵
     // 渲染盒子
     glm::mat4 model = glm::mat4(1.0f);
+    glBindVertexArray(cubeVAO);
     for (unsigned int i = 0; i < 10; i++) {
       model = glm::translate(model, cubePositions[i]);
       float angle = 20.0f * i;
@@ -236,10 +237,6 @@ int main() {
       cubeShader.setMat4("model", model);
       glDrawArrays(GL_TRIANGLES, 0, 36);
     }
-
-    glBindVertexArray(cubeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-
     lightShader.use();
 
     lightShader.setMat4("projection", projection);
@@ -254,7 +251,7 @@ int main() {
     lightShader.setMat4("model", model);
 
     // 渲染灯光
-    glBindVertexArray(cubeVAO);
+    glBindVertexArray(lightVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glfwSwapBuffers(window);
