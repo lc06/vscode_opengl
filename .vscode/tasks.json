@@ -8,14 +8,23 @@
             "args": [
                 "${file}",
                 "${workspaceFolder}/src/glad.c",
+                "${workspaceFolder}/include/imgui.cpp",
+                "${workspaceFolder}/include/imgui_impl_glfw.cpp",
+                "${workspaceFolder}/include/imgui_impl_opengl3.cpp",
+                "${workspaceFolder}/include/imgui_demo.cpp",
+                "${workspaceFolder}/include/imgui_draw.cpp",
+                "${workspaceFolder}/include/imgui_tables.cpp",
+                "${workspaceFolder}/include/imgui_widgets.cpp",
                 "-g",
                 "-o",
                 "${workspaceFolder}/build/${fileBasenameNoExtension}.exe",
                 "-ID:/openglrepo/Include",
+                "-I${workspaceFolder}/include",
                 "-LD:/openglrepo/Libs",
                 "-lglfw3dll",
                 "-lopengl32",
-                "-lFreeImage"
+                "-lFreeImage",
+                "-l:libassimp.dll.a"
             ],
             "options": {
                 "cwd": "C:/msys64/mingw64/bin"
